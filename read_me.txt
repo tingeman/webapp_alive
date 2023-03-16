@@ -1,0 +1,1 @@
+C:\python\Python39\python -m venv D:\vapp\alive\env

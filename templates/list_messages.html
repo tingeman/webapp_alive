@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Name</th>
+        <th>Value</th>
+		<th>Submitted (UTC)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for message in messages %}
+        <tr>
+		  <td>{{ message['client'] }}</td>
+          <td>{{ message['name'] }}</td>
+          <td>{{ message['value'] }}</td>
+		  <td>{{ message['created'] }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+		  "ordering": true,
+		  "order": [[3, "desc"]],
+		  "pageLength": 50,
+	      "stateSave": true,
+		  "searching": true});
+    });
+  </script>
+{% endblock %}
