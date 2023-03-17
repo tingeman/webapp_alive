@@ -12,7 +12,6 @@ import pandas as pd
 import sqlite3
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
-import ipdb
 
 server = Flask(__name__)
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
@@ -103,7 +102,7 @@ def update_data(start_date, end_date, value):
 
 app.layout = html.Div(children=[
     html.Div([
-        html.H1('DataTable Example'),
+        html.H1('Alive messages from RPi control boxes...'),
         dcc.Dropdown(id='name-dropdown', options=[], multi=True),
         dcc.DatePickerRange(
             id='date-range-picker',
