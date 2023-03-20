@@ -81,8 +81,9 @@ def serve_info():
               Output('name-dropdown', 'options'),
               Input('date-range-picker', 'start_date'),
               Input('date-range-picker', 'end_date'),
-              Input('name-dropdown', 'value'))
-def update_data(start_date, end_date, value):
+              Input('name-dropdown', 'value'),
+              Input('reload-button', 'n_clicks'))
+def update_data(start_date, end_date, value, bt_clicks):
     # Update table data (list of messages)
     df = get_data(start_date, end_date)
     list_of_options = df['name'].sort_values().unique()
@@ -102,52 +103,91 @@ def update_data(start_date, end_date, value):
 
 app.layout = html.Div(children=[
     html.Div([
-        html.H1('Alive messages from RPi control boxes...'),
-        dcc.Dropdown(id='name-dropdown', options=[], multi=True),
-        dcc.DatePickerRange(
-            id='date-range-picker',
-            min_date_allowed=dt(2000, 1, 1),
-            max_date_allowed=dt.now(),
-            initial_visible_month=dt.now(),
-            start_date_placeholder_text='Start Date',
-            end_date_placeholder_text='End Date',
-            start_date=start_date,
-            end_date=end_date
-        ),
-        dash_table.DataTable(
-            id='table',
-            columns=[
-                {'name': 'ID', 'id': 'id'},
-                {'name': 'Client', 'id': 'client'},
-                {'name': 'Key', 'id': 'name'},
-                {'name': 'Value', 'id': 'value'},
-                {'name': 'Timestamp (UTC)', 'id': 'created'}
-            ],
-            page_size=50,
-            style_table={'overflowX': 'scroll'},
-            filter_action='native',
-            sort_action='native',
-            sort_mode='single',
-            sort_by=[{'column_id': 'created', 'direction': 'desc'}],
-            style_cell={'textAlign': 'left'},
-            style_data={
-                'color': 'black',
-                'backgroundColor': 'white'
-            },
-            style_data_conditional=[
-                {
-                    'if': {'row_index': 'odd'},
-                    'backgroundColor': 'rgb(220, 220, 220)',
-                }
-            ],
-            style_header={
-                'backgroundColor': 'rgb(210, 210, 210)',
-                'color': 'black',
-                'fontWeight': 'bold'
-            }
-            
-        )
+        dbc.Row(dbc.Col(html.H1('Alive messages from RPi control boxes...'), width="auto")),
+        dbc.Row([dbc.Col(html.Div(dcc.DatePickerRange(id='date-range-picker',
+                                             min_date_allowed=dt(2000, 1, 1),
+                                             max_date_allowed=dt.now(),
+                                             initial_visible_month=dt.now(),
+                                             start_date_placeholder_text='Start Date',
+                                             end_date_placeholder_text='End Date',
+                                             start_date=start_date,
+                                             end_date=end_date,
+                                             persistence=True,
+                                             persistence_type='session',), className='dash-bootstrap'), width=3),
+                 dbc.Col(html.Div(dcc.Dropdown(id='name-dropdown', options=[], multi=True, persistence=True), className='dash-bootstrap')),
+                 dbc.Col(dbc.Button('Reload', id='reload-button'), width=3),]),
+        dbc.Row(dash_table.DataTable(id='table',
+                                     columns=[{'name': 'ID', 'id': 'id'},
+                                              {'name': 'Client', 'id': 'client'},
+                                              {'name': 'Key', 'id': 'name'},
+                                              {'name': 'Value', 'id': 'value'},
+                                              {'name': 'Timestamp (UTC)', 'id': 'created'}],
+                                     page_size=50,
+                                     style_table={'overflowX': 'scroll'},
+                                     filter_action='native',
+                                     sort_action='native',
+                                     sort_mode='single',
+                                     sort_by=[{'column_id': 'created', 'direction': 'desc'}],
+                                     style_cell={'textAlign': 'left'},
+                                     style_data={'color': 'black',
+                                                'backgroundColor': 'white'},
+                                     style_data_conditional=[{'if': {'row_index': 'odd'},
+                                                              'backgroundColor': 'rgb(220, 220, 220)',}],
+                                     style_header={'backgroundColor': 'rgb(210, 210, 210)',
+                                                   'color': 'black',
+                                                   'fontWeight': 'bold'})),
     ], className="dbc")], style={'margin': '200px'})
+
+
+        # html.H1('Alive messages from RPi control boxes...'),
+        # dcc.Dropdown(id='name-dropdown', options=[], multi=True, persistence=True),
+        # dcc.DatePickerRange(
+        #     id='date-range-picker',
+        #     min_date_allowed=dt(2000, 1, 1),
+        #     max_date_allowed=dt.now(),
+        #     initial_visible_month=dt.now(),
+        #     start_date_placeholder_text='Start Date',
+        #     end_date_placeholder_text='End Date',
+        #     start_date=start_date,
+        #     end_date=end_date,
+        #     persistence=True,
+        #     persistence_type='session',
+        # ),
+        # html.Button('Reload', id='reload-button'),
+        # dash_table.DataTable(
+        #     id='table',
+        #     columns=[
+        #         {'name': 'ID', 'id': 'id'},
+        #         {'name': 'Client', 'id': 'client'},
+        #         {'name': 'Key', 'id': 'name'},
+        #         {'name': 'Value', 'id': 'value'},
+        #         {'name': 'Timestamp (UTC)', 'id': 'created'}
+        #     ],
+        #     page_size=50,
+        #     style_table={'overflowX': 'scroll'},
+        #     filter_action='native',
+        #     sort_action='native',
+        #     sort_mode='single',
+        #     sort_by=[{'column_id': 'created', 'direction': 'desc'}],
+        #     style_cell={'textAlign': 'left'},
+        #     style_data={
+        #         'color': 'black',
+        #         'backgroundColor': 'white'
+        #     },
+        #     style_data_conditional=[
+        #         {
+        #             'if': {'row_index': 'odd'},
+        #             'backgroundColor': 'rgb(220, 220, 220)',
+        #         }
+        #     ],
+        #     style_header={
+        #         'backgroundColor': 'rgb(210, 210, 210)',
+        #         'color': 'black',
+        #         'fontWeight': 'bold'
+        #     }
+            
+        # )
+    #], className="dbc")], style={'margin': '200px'})
 
 
 if __name__ == '__main__':
