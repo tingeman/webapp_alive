@@ -5,6 +5,6 @@ CREATE TABLE messages (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name TEXT NOT NULL,
     value TEXT NOT NULL,
-    client TEXT NOT NULL
+    client TEXT NOT NULL,
     message_id TEXT NOT NULL
 );

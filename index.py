@@ -38,7 +38,8 @@ def get_data(start_date, end_date):
     conn.close()
     data = []
     for row in rows:
-        data.append({'id': row[0], 'client': row[1], 'name': row[3], 'value': row[4], 'created': row[2]})
+        mid = row[5][:13] if len(row[5]) > 13 else row[5]
+        data.append({'id': row[0], 'client': row[1], 'name': row[3], 'value': row[4], 'created': row[2], 'message_id': mid})
     return pd.DataFrame(data)
 
 # -------------------------------------------------------------------------
@@ -72,7 +73,7 @@ def submit_data():
                 # commit message to database
                 for k,v in request_data.items():
                     c.execute('INSERT INTO messages (name, value, client, message_id) VALUES (?, ?, ?, ?)', (k, v, client, message_id))
-                c.commit()
+                conn.commit()
             conn.close()
         resp.append('Payload processed')
         resp_code = 200
