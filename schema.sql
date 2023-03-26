@@ -6,4 +6,5 @@ CREATE TABLE messages (
     name TEXT NOT NULL,
     value TEXT NOT NULL,
     client TEXT NOT NULL
+    message_id TEXT NOT NULL
 );

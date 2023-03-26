@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, url_for
+from flask import Flask, jsonify, request, url_for, make_response
 import dash
 from dash import dcc
 from dash import html
@@ -33,7 +33,7 @@ def get_data(start_date, end_date):
     # obtain messages from database within daterange
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT id, client, created, name, value FROM messages WHERE DATE(created) BETWEEN ? AND ?", (start_date, end_date))
+    c.execute("SELECT id, client, created, name, value, message_id FROM messages WHERE DATE(created) BETWEEN ? AND ?", (start_date, end_date))
     rows = c.fetchall()
     conn.close()
     data = []
@@ -48,24 +48,36 @@ def get_data(start_date, end_date):
 def submit_data():
     # Store posted messages to database
     resp = []
+    resp_code = None
     try:
         request_data = request.get_json()
     except:
         resp.append('cannot get JSON')
-        return '; '.join(resp)
-    if (request_data is not None) & (len(request_data) > 0):
-        conn = get_db_connection()
-        resp.append('db opened')
-        if 'client' in request_data:
+        resp_code = 400
+    else:
+        if (request_data is not None) & (len(request_data) > 0):
+            #import ipdb as pdb; pdb.set_trace()
+            conn = get_db_connection()
+            c = conn.cursor()
+
+            #if 'client' in request_data:
             client = request_data.pop('client', 'unknown')
-            resp.append(client)
-        for k,v in request_data.items():
-            conn.execute('INSERT INTO messages (name, value, client) VALUES (?, ?, ?)', (k, v, client))
-            resp.append('{0}: {1}'.format(k,v))
-        conn.commit()
-        conn.close()
-        resp.append('db closed')
-    return '; '.join(resp)
+            #if 'id' in request_data:
+            message_id = request_data.pop('id', 'unknown')
+            c.execute("SELECT * FROM messages WHERE message_id=?", (message_id,))
+            row = c.fetchone()
+            
+            if (message_id == 'unkown') or (not row):
+                # if message doesn't have an id, or if it does not already exist in the database
+                # commit message to database
+                for k,v in request_data.items():
+                    c.execute('INSERT INTO messages (name, value, client, message_id) VALUES (?, ?, ?, ?)', (k, v, client, message_id))
+                c.commit()
+            conn.close()
+        resp.append('Payload processed')
+        resp_code = 200
+    return make_response(jsonify(resp), resp_code)
+
 
 @server.route('/info', methods=['GET'])
 def serve_info():
@@ -121,7 +133,8 @@ app.layout = html.Div(children=[
                                               {'name': 'Client', 'id': 'client'},
                                               {'name': 'Key', 'id': 'name'},
                                               {'name': 'Value', 'id': 'value'},
-                                              {'name': 'Timestamp (UTC)', 'id': 'created'}],
+                                              {'name': 'Timestamp (UTC)', 'id': 'created'},
+                                              {'name': 'MessageID', 'id': 'message_id'}],
                                      page_size=50,
                                      style_table={'overflowX': 'scroll'},
                                      filter_action='native',
