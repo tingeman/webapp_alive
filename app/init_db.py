@@ -8,9 +8,9 @@ with open('schema.sql') as f:
 
 cur = connection.cursor()
 
-cur.execute("INSERT INTO messages (name, value, client) VALUES (?, ?, ?)",
-            ('test', 'test', 'test')
-            )
+#cur.execute("INSERT INTO messages (name, value, client) VALUES (?, ?, ?)",
+#            ('test', 'test', 'test')
+#            )
 
 connection.commit()
 connection.close()
