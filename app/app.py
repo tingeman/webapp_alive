@@ -12,6 +12,7 @@ import pandas as pd
 import sqlite3
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
+from pathlib import Path
 
 server = Flask(__name__)
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
@@ -22,6 +23,12 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css],
 
 end_date = datetime.date.today()
 start_date = end_date - relativedelta(months=1)
+
+if Path('/web_data/alive_info.db').exists():
+    print('Database exists at /web_data/alive_info.db')
+else:
+    print('Database does not exist at /web_data/alive_info.db')
+
 
 # -------------------------------------------------------------------------
 # Support functions
@@ -53,6 +60,7 @@ def get_db_connection():
     return conn
 
 def get_data(start_date, end_date):
+    
     # obtain messages from database within daterange
     conn = get_db_connection()
     c = conn.cursor()
@@ -63,6 +71,11 @@ def get_data(start_date, end_date):
     for row in rows:
         mid = row[5][:13] if len(row[5]) > 13 else row[5]
         data.append({'id': row[0], 'client': row[1], 'name': row[3], 'value': row[4], 'created': row[2], 'message_id': mid})
+    
+    # Print debug information: How many messages were found between the dates (and which dates)
+    # Start line with a current time stamp
+    print(f'{datetime.datetime.now()} - Found {len(data)} messages between {start_date} and {end_date}')
+    
     return pd.DataFrame(data)
 
 # -------------------------------------------------------------------------
@@ -229,6 +242,11 @@ app.layout = html.Div(children=[
             
         # )
     #], className="dbc")], style={'margin': '200px'})
+
+# print debug information: how many messages are present in the database? (include a timestamp)
+# Use start date long ago (2000-01-01) and end date in the future (2100-01-01)
+df = get_data('2000-01-01', '2100-01-01')
+print(f'{datetime.datetime.now()} - Found {len(df)} messages in the database')
 
 
 if __name__ == '__main__':
