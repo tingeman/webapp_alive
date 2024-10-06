@@ -74,7 +74,7 @@ def get_data(start_date, end_date):
     
     # Print debug information: How many messages were found between the dates (and which dates)
     # Start line with a current time stamp
-    print(f'{datetime.datetime.now()} - Found {len(data)} messages between {start_date} and {end_date}')
+    print(f'{dt.now()} - Found {len(data)} messages between {start_date} and {end_date}')
     
     return pd.DataFrame(data)
 
@@ -245,8 +245,8 @@ app.layout = html.Div(children=[
 
 # print debug information: how many messages are present in the database? (include a timestamp)
 # Use start date long ago (2000-01-01) and end date in the future (2100-01-01)
-df = get_data(datetime.strptime("2000-01-01", '%Y-%m-%d'), datetime.strptime("2100-01-01", '%Y-%m-%d'))
-print(f'{datetime.datetime.now()} - Found {len(df)} messages in the database')
+df = get_data(dt(2000,1,1), dt(2100,1,1))
+print(f'{dt.now()} - Found {len(df)} messages in the database')
 
 
 if __name__ == '__main__':
