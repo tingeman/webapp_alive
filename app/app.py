@@ -29,7 +29,7 @@ start_date = end_date - relativedelta(months=1)
 
 def get_db_connection():
     # establish database connection
-    conn = sqlite3.connect('alive_info.db')
+    conn = sqlite3.connect('/web_data/alive_info.db')
 
     # Check if table exists
     c = conn.cursor()
