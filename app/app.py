@@ -245,7 +245,7 @@ app.layout = html.Div(children=[
 
 # print debug information: how many messages are present in the database? (include a timestamp)
 # Use start date long ago (2000-01-01) and end date in the future (2100-01-01)
-df = get_data('2000-01-01', '2100-01-01')
+df = get_data(datetime.strptime("2000-01-01", '%Y-%m-%d'), datetime.strptime("2100-01-01", '%Y-%m-%d'))
 print(f'{datetime.datetime.now()} - Found {len(df)} messages in the database')
 
 
